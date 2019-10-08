@@ -8,10 +8,14 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  Button,
   ScrollView,
   StyleSheet,
 } from 'react-native';
+import Textarea from 'react-native-textarea';
+
+import {Button} from 'react-native-elements';
+import Wallpaper from './components/Wallpaper';
+
 import Swiper from 'react-native-swiper';
 
 import {CheckBox} from 'react-native-elements';
@@ -20,7 +24,7 @@ import {FlatGrid} from 'react-native-super-grid';
 const winHeight = Dimensions.get('window').height;
 const winWidth = Dimensions.get('window').width;
 export default class Questions extends React.Component {
-  state = {};
+  state = {showSubmit: false, ShowNext: false, AnswerArray: []};
   LangQuestion = [];
   constructor(props) {
     super(props);
@@ -40,15 +44,34 @@ export default class Questions extends React.Component {
       });
     }
   }
-
+  SubmitQuestions() {
+    this.props.navigation.navigate('Thanks');
+  }
   renderQuestion = item => {
     return (
-      <View style={styles.slide}>
-        <Text key={item.questionid} color="#841584" style={styles.text}>
-          {item.question}
-        </Text>
-        {this.renderChoice(item.options, item.type, item.questionid)}
-      </View>
+      <Wallpaper>
+        <View style={styles.slide}>
+          <Text key={item.questionid} color="#841584" style={styles.text}>
+            {item.question}
+          </Text>
+          <View style={{marginTop: '10%'}}>
+            {this.renderChoice(item.options, item.type, item.questionid)}
+          </View>
+        </View>
+        {this.state.showSubmit && this.state.ShowNext ? (
+          <Button
+            title="Submit"
+            onPress={() => {
+              this.SubmitQuestions();
+            }}
+            titleStyle={{fontSize: 44, fontWeight: 'bold'}}
+            style={{
+              bottom: winWidth / 6,
+              marginHorizontal: '28%',
+            }}
+          />
+        ) : null}
+      </Wallpaper>
     );
   };
 
@@ -64,9 +87,10 @@ export default class Questions extends React.Component {
             <CheckBox
               key={item.item.OPTION_ID}
               title={item.item.OPTION_NAME}
-              textStyle={{fontSize: 22}}
+              textStyle={styles.OptionText}
               checked={this.state[answerkey]}
               onPress={() => {
+                this.setState({ShowNext: true});
                 this.setState({[answerkey]: !this.state[answerkey]});
               }}
             />
@@ -103,9 +127,11 @@ export default class Questions extends React.Component {
               title={item.item.OPTION_NAME}
               checkedIcon="dot-circle-o"
               uncheckedIcon="circle-o"
-              textStyle={{fontSize: 22}}
+              containerStyle={styles.Checkcontainer}
+              textStyle={styles.OptionText}
               checked={this.state[answerkey]}
               onPress={() => {
+                this.setState({ShowNext: true});
                 this.removeOtherKey(answerkey);
                 this.setState({[answerkey]: !this.state[answerkey]});
               }}
@@ -118,12 +144,21 @@ export default class Questions extends React.Component {
 
   renderEssay() {
     return (
-      <TextInput
-        multiline={true}
-        numberOfLines={7}
-        style={{fontSize: 32}}
-        placeholder="Write your thought here.."
-      />
+      <View style={styles.textareaContainer}>
+        <Textarea
+          multiline={true}
+          containerStyle={styles.textareaContainer}
+          placeholderTextColor="white"
+          style={styles.textarea}
+          maxLength={300}
+          placeholder="Write your thought here"
+          onChangeText={text => {
+            if (text.length > 3) {
+              this.setState({ShowNext: true});
+            }
+          }}
+        />
+      </View>
     );
   }
 
@@ -139,6 +174,8 @@ export default class Questions extends React.Component {
           return (
             <TouchableOpacity
               onPress={() => {
+                this.setState({ShowNext: true});
+
                 this.removeOtherKey(answerkey);
 
                 this.setState({[answerkey]: !this.state[answerkey]});
@@ -157,9 +194,9 @@ export default class Questions extends React.Component {
                   checked={this.state[answerkey]}
                   checkedIcon="dot-circle-o"
                   uncheckedIcon="circle-o"
-                  style={{color: 'transparent'}}
-                  containerStyle={{color: 'transparent'}}
+                  textStyle={styles.OptionText}
                   onPress={() => {
+                    this.setState({ShowNext: true});
                     this.removeOtherKey(answerkey);
                     this.setState({[answerkey]: !this.state[answerkey]});
                   }}
@@ -194,8 +231,25 @@ export default class Questions extends React.Component {
       <Swiper
         style={styles.wrapper}
         loop={false}
+        showsPagination={false}
         scrollEnabled={false}
-        showsButtons={true}>
+        showsButtons={true}
+        onIndexChanged={index => {
+          this.setState({ShowNext: false});
+
+          if (LangQuestion.length - 1 == index) {
+            this.setState({showSubmit: true});
+          } else {
+            this.setState({showSubmit: false});
+          }
+        }}
+        buttonWrapperStyle={styles.buttonWrapper}
+        nextButton={
+          this.state.ShowNext ? (
+            <Text style={styles.buttonText}>Next ›</Text>
+          ) : null
+        }
+        prevButton={<Text style={styles.buttonText}>‹ Previous</Text>}>
         {LangQuestion.map(item => {
           return this.renderQuestion(item);
         })}
@@ -209,16 +263,58 @@ const styles = StyleSheet.create({
     flex: 1,
     marginBottom: '10%',
   },
+  buttonWrapper: {
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    flex: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    padding: '12%',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginBottom: '15%',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 45,
+    fontWeight: 'bold',
+  },
+  OptionText: {
+    color: '#F035E0',
+    fontSize: 37,
+  },
   slide: {
     flex: 1,
     justifyContent: 'center',
+    marginTop: '10%',
     alignItems: 'center',
     padding: '10%',
-    backgroundColor: '#9DD6EB',
+    backgroundColor: 'transparent',
   },
   text: {
     color: '#fff',
-    fontSize: 30,
+    fontSize: 42,
     fontWeight: 'bold',
+  },
+  Checkcontainer: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  textareaContainer: {
+    height: '100%',
+    width: '100%',
+    padding: 5,
+    backgroundColor: 'transparent',
+    borderwidth: 3,
+    bordercolor: 'red',
+  },
+  textarea: {
+    textAlignVertical: 'top', // hack android
+    fontSize: 34,
+    fontWeight: 'bold',
+    color: 'white',
   },
 });
