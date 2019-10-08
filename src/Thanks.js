@@ -14,36 +14,33 @@ import {StackActions, NavigationActions} from 'react-navigation';
 import {Button} from 'react-native-elements';
 const winHeight = Dimensions.get('window').height;
 const winWidth = Dimensions.get('window').width;
+
+let options = [];
+
 export default class Thanks extends React.Component {
   state = {language: [], Allquestion: []};
-  async componentDidMount() {
-    await callService(
-      {surveymetaid: '500xn1569826741'},
-      'apis/index.php/surveyinfo',
-      false,
-    )
-      .then(res => {
-        console.log(res);
-        this.setState({
-          language: res.langattr.split(','),
-          Allquestion: res.queslist,
-        });
-      })
-      .catch(err => {
-        console.log(err);
-      })
-      .finally(() => {
-        this.setState({showSpinner: false});
-      });
-  }
-
-  NavigateToQuestion(lang) {
-    const {navigate} = this.props.navigation;
-    var langQuestions = this.state.Allquestion.filter(
-      x => x.lang.toUpperCase() == lang,
-    );
-
-    navigate('Questions', {Allquestion: langQuestions});
+  //async componentDidMount() {
+  //   await callService(
+  //     {surveymetaid: '500xn1569826741'},
+  //     'apis/index.php/surveyinfo',
+  //     false,
+  //   )
+  //     .then(res => {
+  //       console.log(res);
+  //       this.setState({
+  //         language: res.langattr.split(','),
+  //         Allquestion: res.queslist,
+  //       });
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //     })
+  //     .finally(() => {
+  //       this.setState({showSpinner: false});
+  //     });
+  // }
+  constructor(props) {
+    super(props);
   }
 
   render() {

@@ -3,6 +3,7 @@ import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
 import Start from './Start';
 import Thanks from './Thanks';
+import Customer from './Customer';
 import Questions from './Questions';
 import Main from './components/Main';
 
@@ -33,6 +34,13 @@ const AppNavigator = createStackNavigator({
   },
   Questions: {
     screen: Questions,
+    navigationOptions: ({navigation}) => ({
+      title: 'Question Page',
+      header: null,
+    }),
+  },
+  Customer: {
+    screen: Customer,
     navigationOptions: ({navigation}) => ({
       title: 'Question Page',
       header: null,

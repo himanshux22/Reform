@@ -40,12 +40,49 @@ export default class Questions extends React.Component {
 
             this.setState({[answerkey]: false});
           });
+        } else {
+          var answerkey = item.questionid + '-' + 'Textbox';
+
+          this.setState({[answerkey]: ''});
         }
       });
     }
   }
   SubmitQuestions() {
-    this.props.navigation.navigate('Thanks');
+    console.log(this.state.AnswerArray);
+    var options = [];
+    //create for essay first
+    LangQuestion.map(item => {
+      if (item.type == 'Essay') {
+        var answerkey = item.questionid + '-' + 'Textbox';
+
+        var obj = {
+          questionid: item.questionid,
+          type: item.type,
+          answerid: '',
+          answercode: '',
+          answermsg: this.state[answerkey],
+        };
+        options.push(obj);
+      }
+    });
+    this.state.AnswerArray.forEach(element => {
+      var data = element.split('-');
+      var qid = data[0];
+      var ans = data[1];
+      var fullques = LangQuestion.filter(x => x.questionid == qid);
+      var singleoption = fullques[0].options.filter(y => y.OPTION_ID == ans);
+      var obj = {
+        questionid: qid,
+        type: fullques[0].type,
+        answerid: ans,
+        answercode: singleoption[0].OPTION_CODE,
+        answermsg: '',
+      };
+      options.push(obj);
+    });
+    console.log(options);
+    this.props.navigation.navigate('Customer', {options: options});
   }
   renderQuestion = item => {
     return (
@@ -91,7 +128,14 @@ export default class Questions extends React.Component {
               checked={this.state[answerkey]}
               onPress={() => {
                 this.setState({ShowNext: true});
-                this.setState({[answerkey]: !this.state[answerkey]});
+                var arr = this.state.AnswerArray;
+                !this.state.AnswerArray.includes(answerkey)
+                  ? arr.push(answerkey)
+                  : null;
+                this.setState({
+                  [answerkey]: !this.state[answerkey],
+                  AnswerArray: arr,
+                });
               }}
             />
           );
@@ -108,7 +152,9 @@ export default class Questions extends React.Component {
 
     for (i = 0; i < totallen; i++) {
       var answerkey = questionid + '-' + question[0].options[i].OPTION_ID;
-      this.setState({[answerkey]: false});
+      var filteredAry = this.state.AnswerArray.filter(e => e !== answerkey);
+
+      this.setState({[answerkey]: false, AnswerArray: filteredAry});
     }
   }
 
@@ -133,7 +179,15 @@ export default class Questions extends React.Component {
               onPress={() => {
                 this.setState({ShowNext: true});
                 this.removeOtherKey(answerkey);
-                this.setState({[answerkey]: !this.state[answerkey]});
+
+                var arr = this.state.AnswerArray;
+                !this.state.AnswerArray.includes(answerkey)
+                  ? arr.push(answerkey)
+                  : null;
+                this.setState({
+                  [answerkey]: !this.state[answerkey],
+                  AnswerArray: arr,
+                });
               }}
             />
           );
@@ -142,7 +196,7 @@ export default class Questions extends React.Component {
     );
   }
 
-  renderEssay() {
+  renderEssay(questionid) {
     return (
       <View style={styles.textareaContainer}>
         <Textarea
@@ -151,10 +205,12 @@ export default class Questions extends React.Component {
           placeholderTextColor="white"
           style={styles.textarea}
           maxLength={300}
-          placeholder="Write your thought here"
+          placeholder="Start Writing from here.."
           onChangeText={text => {
+            var answerkey = questionid + '-' + 'Textbox';
+
             if (text.length > 3) {
-              this.setState({ShowNext: true});
+              this.setState({ShowNext: true, [answerkey]: text});
             }
           }}
         />
@@ -177,8 +233,14 @@ export default class Questions extends React.Component {
                 this.setState({ShowNext: true});
 
                 this.removeOtherKey(answerkey);
-
-                this.setState({[answerkey]: !this.state[answerkey]});
+                var arr = this.state.AnswerArray;
+                !this.state.AnswerArray.includes(answerkey)
+                  ? arr.push(answerkey)
+                  : null;
+                this.setState({
+                  [answerkey]: !this.state[answerkey],
+                  AnswerArray: arr,
+                });
               }}>
               <ImageBackground
                 style={{
@@ -198,7 +260,14 @@ export default class Questions extends React.Component {
                   onPress={() => {
                     this.setState({ShowNext: true});
                     this.removeOtherKey(answerkey);
-                    this.setState({[answerkey]: !this.state[answerkey]});
+                    var arr = this.state.AnswerArray;
+                    !this.state.AnswerArray.includes(answerkey)
+                      ? arr.push(answerkey)
+                      : null;
+                    this.setState({
+                      [answerkey]: !this.state[answerkey],
+                      AnswerArray: arr,
+                    });
                   }}
                 />
               </ImageBackground>
@@ -210,7 +279,7 @@ export default class Questions extends React.Component {
   }
   renderChoice(option, type, questionid) {
     if (type == 'Essay') {
-      return <View key={option.OPTION_ID}>{this.renderEssay()}</View>;
+      return <View key={option.OPTION_ID}>{this.renderEssay(questionid)}</View>;
     }
 
     if (type == 'Image') {
@@ -305,11 +374,11 @@ const styles = StyleSheet.create({
   },
   textareaContainer: {
     height: '100%',
-    width: '100%',
+    width: winWidth / 1.3,
     padding: 5,
     backgroundColor: 'transparent',
-    borderwidth: 3,
-    bordercolor: 'red',
+    borderWidth: 1.2,
+    borderColor: 'white',
   },
   textarea: {
     textAlignVertical: 'top', // hack android
