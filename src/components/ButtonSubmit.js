@@ -10,6 +10,8 @@ import {
   Alert,
   View,
 } from 'react-native';
+import {callService} from '../utils/Services';
+
 import {StackActions, NavigationActions} from 'react-navigation';
 
 import spinner from '../images/loading.gif';
@@ -17,7 +19,7 @@ import spinner from '../images/loading.gif';
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 const MARGIN = DEVICE_WIDTH / 15;
-
+let logindata = null;
 export default class ButtonSubmit extends Component {
   constructor() {
     super();
@@ -31,9 +33,37 @@ export default class ButtonSubmit extends Component {
     this._onPress = this._onPress.bind(this);
   }
 
-  _onPress() {
-    if (this.state.isLoading) return;
+  async LoginAPI() {
+    if (this.props.username == '' || this.props.password == '') {
+      alert('Please enter username and password');
+      return;
+    }
 
+    await callService(
+      {accid: '9998887777', accpwd: 'pass'},
+      //  {accid: this.props.username, accpwd: this.props.password},
+
+      'apis/index.php/custlogin',
+      false,
+    )
+      .then(res => {
+        logindata = res;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      .finally(() => {
+        this.setState({showSpinner: false});
+      });
+  }
+  async _onPress() {
+    if (this.state.isLoading) return;
+    var tt = await this.LoginAPI();
+
+    if (logindata == null || logindata.code == '9992') {
+      alert('Invalid Login');
+      return;
+    }
     this.setState({isLoading: true});
     Animated.timing(this.buttonAnimated, {
       toValue: 1,
@@ -41,14 +71,19 @@ export default class ButtonSubmit extends Component {
       easing: Easing.linear,
     }).start();
 
-    setTimeout(() => {
+    setTimeout(async () => {
       this._onGrow();
     }, 2000);
 
     setTimeout(() => {
       const resetAction = StackActions.reset({
         index: 0,
-        actions: [NavigationActions.navigate({routeName: 'Surveys'})],
+        actions: [
+          NavigationActions.navigate({
+            routeName: 'Surveys',
+            params: {logindata: logindata},
+          }),
+        ],
       });
       this.props.navigation.dispatch(resetAction);
       this.setState({isLoading: false});

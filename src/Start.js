@@ -13,19 +13,45 @@ import {Button} from 'react-native-elements';
 const winHeight = Dimensions.get('window').height;
 const winWidth = Dimensions.get('window').width;
 var Alldata = null;
-
+var logindata = null;
+var survey = null;
 export default class Start extends React.Component {
   state = {language: [], Allquestion: []};
   constructor(props) {
     super(props);
+    logindata = this.props.navigation.getParam('logindata', null);
   }
 
-  componentDidMount() {
-    AllData = this.props.navigation.getParam('AllData', null);
+  async componentDidMount() {
+    var surveyID = this.props.navigation.getParam('surveyID', null);
+    await callService(
+      {surveymetaid: surveyID.surveymetaid},
+      'apis/index.php/surveyinfo',
+      false,
+    )
+      .then(res => {
+        if (res.code == '9991') {
+          alert('Survey is empty or Already filled.');
+          this.props.navigation.goBack(null);
+          return;
+        }
+        survey = res;
+        console.log(res);
+        Alldata = res;
+        this.setState({
+          language: res.langattr.split(','),
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      })
+      .finally(() => {
+        this.setState({showSpinner: false});
+      });
 
     this.setState({
-      language: AllData.langattr.split(','),
-      Allquestion: AllData.queslist,
+      language: Alldata.langattr.split(','),
+      Allquestion: Alldata.queslist,
     });
   }
 
@@ -35,7 +61,11 @@ export default class Start extends React.Component {
       x => x.lang.toUpperCase() == lang,
     );
 
-    navigate('Questions', {Allquestion: langQuestions});
+    navigate('Questions', {
+      Allquestion: langQuestions,
+      logindata: logindata,
+      survey,
+    });
   }
 
   renderButton = item => {

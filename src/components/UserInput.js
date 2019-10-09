@@ -16,6 +16,9 @@ export default class UserInput extends Component {
           returnKeyType={this.props.returnKeyType}
           placeholderTextColor="white"
           underlineColorAndroid="transparent"
+          onChangeText={text => {
+            this.props.Setdata(text);
+          }}
         />
       </View>
     );
@@ -38,7 +41,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'rgba(255, 255, 255, 0.4)',
     width: DEVICE_WIDTH / 1.5,
-    height: '50%',
+    height: 80,
     marginHorizontal: 30,
     paddingLeft: '6%',
     borderRadius: 20,

@@ -18,14 +18,24 @@ import {
 const DEVICE_WIDTH = Dimensions.get('window').width;
 
 export default class LoginScreen extends Component {
-  SetCred(username, pass) {}
+  state = {username: '', password: ''};
+  SetUsername = username => {
+    this.setState({username: username});
+  };
+  SetPass = pass => {
+    this.setState({password: pass});
+  };
   render() {
     return (
       <Wallpaper>
         <Logo />
         <View style={{height: DEVICE_WIDTH / 1.5}}>
-          <Form SetCred={this.SetCred} />
-          <ButtonSubmit navigation={this.props.navigation} />
+          <Form Setuser={this.SetUsername} Setpass={this.SetPass} />
+          <ButtonSubmit
+            username={this.state.username}
+            password={this.state.password}
+            navigation={this.props.navigation}
+          />
         </View>
       </Wallpaper>
     );

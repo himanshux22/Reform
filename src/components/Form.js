@@ -41,6 +41,7 @@ export default class Form extends Component {
           autoCapitalize={'none'}
           returnKeyType={'done'}
           autoCorrect={false}
+          Setdata={this.props.Setuser}
         />
 
         <UserInput
@@ -50,6 +51,7 @@ export default class Form extends Component {
           returnKeyType={'done'}
           autoCapitalize={'none'}
           autoCorrect={false}
+          Setdata={this.props.Setpass}
         />
         <TouchableOpacity style={styles.btnEye} onPress={this.showPass}>
           <Image source={eyeImg} style={styles.iconEye} />

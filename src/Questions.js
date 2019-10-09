@@ -23,12 +23,18 @@ import {FlatGrid} from 'react-native-super-grid';
 
 const winHeight = Dimensions.get('window').height;
 const winWidth = Dimensions.get('window').width;
+
+let logindata = null;
+var survey = null;
+
 export default class Questions extends React.Component {
   state = {showSubmit: false, ShowNext: false, AnswerArray: []};
   LangQuestion = [];
   constructor(props) {
     super(props);
     LangQuestion = this.props.navigation.getParam('Allquestion', null);
+    logindata = this.props.navigation.getParam('logindata', null);
+    survey = this.props.navigation.getParam('survey', null);
   }
 
   componentWillMount() {
@@ -86,7 +92,11 @@ export default class Questions extends React.Component {
       options.push(obj);
     });
     console.log(options);
-    this.props.navigation.navigate('Customer', {options: options});
+    this.props.navigation.navigate('Customer', {
+      options: options,
+      logindata: logindata,
+      survey,
+    });
   }
   renderQuestion = item => {
     return (
@@ -105,9 +115,10 @@ export default class Questions extends React.Component {
             onPress={() => {
               this.SubmitQuestions();
             }}
-            titleStyle={{fontSize: 44, fontWeight: 'bold'}}
+            titleStyle={{fontSize: 44, fontWeight: 'bold', color: 'white'}}
+            buttonStyle={{backgroundColor: '#35cc95', borderRadius: 25}}
             style={{
-              bottom: winWidth / 6,
+              bottom: winWidth / 7,
               marginHorizontal: '28%',
             }}
           />

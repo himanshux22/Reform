@@ -21,21 +21,20 @@ const winWidth = Dimensions.get('window').width;
 import usernameImg from './images/username.png';
 import passwordImg from './images/password.png';
 let options = [];
-
+let logindata = null;
 export default class Surveys extends React.Component {
-  state = {language: [], Alldata: []};
+  state = {language: [], Alldata: [], surveyList: []};
 
   async componentDidMount() {
     await callService(
-      {surveymetaid: 'B3VD71570592974'},
-      'apis/index.php/surveyinfo',
+      {empid: logindata.empid, orgid: logindata.orgid},
+      'apis/index.php/publishedsurveyslist',
       false,
     )
       .then(res => {
         console.log(res);
         this.setState({
-          language: res.langattr.split(','),
-          Alldata: res,
+          surveyList: res.surveylist,
         });
       })
       .catch(err => {
@@ -48,9 +47,11 @@ export default class Surveys extends React.Component {
 
   constructor(props) {
     super(props);
+    logindata = this.props.navigation.getParam('logindata', null);
+    console.log(logindata);
   }
 
-  renderBoxview() {
+  renderBoxview(itemdata) {
     const {skeleton, centerEverything, containers, textStyle} = styles;
 
     return (
@@ -58,14 +59,14 @@ export default class Surveys extends React.Component {
         onPress={() => {
           this.props.navigation.navigate('Start', {
             AllData: this.state.Alldata,
+            logindata: logindata,
+            surveyID: itemdata.item,
           });
         }}>
         <View
           style={[centerEverything, containers, {backgroundColor: '#635eb4'}]}>
           {this.props.icon}
-          <Text style={textStyle}>
-            What kind of Surveys are you interest in?
-          </Text>
+          <Text style={textStyle}>{itemdata.item.surveyname}</Text>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -103,9 +104,9 @@ export default class Surveys extends React.Component {
           <View style={[contentContainer]}>
             <FlatGrid
               itemDimension={winWidth / 3.5}
-              items={[1, 2, 3]}
+              items={this.state.surveyList}
               renderItem={item => {
-                return this.renderBoxview();
+                return this.renderBoxview(item);
               }}
             />
           </View>
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: '#aeaeae',
-    fontSize: 23,
+    fontSize: 28,
     fontWeight: '500',
     paddingTop: 8,
   },
@@ -179,14 +180,14 @@ const styles = StyleSheet.create({
     width: winWidth * 0.6,
   },
   title: {
-    fontSize: 20,
+    fontSize: 32,
     fontFamily: 'Helvetica Neue',
     fontWeight: '400',
     textAlign: 'center',
   },
   desc: {
     color: 'grey',
-    fontSize: 15,
+    fontSize: 25,
     fontFamily: 'Helvetica Neue',
     fontWeight: '300',
     textAlign: 'center',
