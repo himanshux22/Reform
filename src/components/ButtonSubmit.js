@@ -48,7 +48,7 @@ export default class ButtonSubmit extends Component {
     setTimeout(() => {
       const resetAction = StackActions.reset({
         index: 0,
-        actions: [NavigationActions.navigate({routeName: 'Start'})],
+        actions: [NavigationActions.navigate({routeName: 'Surveys'})],
       });
       this.props.navigation.dispatch(resetAction);
       this.setState({isLoading: false});

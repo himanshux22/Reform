@@ -12,27 +12,21 @@ import Wallpaper from './components/Wallpaper';
 import {Button} from 'react-native-elements';
 const winHeight = Dimensions.get('window').height;
 const winWidth = Dimensions.get('window').width;
+var Alldata = null;
+
 export default class Start extends React.Component {
   state = {language: [], Allquestion: []};
-  async componentDidMount() {
-    await callService(
-      {surveymetaid: '500xn1569826741'},
-      'apis/index.php/surveyinfo',
-      false,
-    )
-      .then(res => {
-        console.log(res);
-        this.setState({
-          language: res.langattr.split(','),
-          Allquestion: res.queslist,
-        });
-      })
-      .catch(err => {
-        console.log(err);
-      })
-      .finally(() => {
-        this.setState({showSpinner: false});
-      });
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount() {
+    AllData = this.props.navigation.getParam('AllData', null);
+
+    this.setState({
+      language: AllData.langattr.split(','),
+      Allquestion: AllData.queslist,
+    });
   }
 
   NavigateToQuestion(lang) {

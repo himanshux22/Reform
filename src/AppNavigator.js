@@ -5,6 +5,7 @@ import Start from './Start';
 import Thanks from './Thanks';
 import Customer from './Customer';
 import Questions from './Questions';
+import Surveys from './Surveys';
 import Main from './components/Main';
 
 const AppNavigator = createStackNavigator({
@@ -27,7 +28,7 @@ const AppNavigator = createStackNavigator({
   Thanks: {
     screen: Thanks,
     navigationOptions: ({navigation}) => ({
-      title: 'Language select',
+      title: 'Thank you',
       header: null,
       headerBackTitle: null,
     }),
@@ -42,7 +43,14 @@ const AppNavigator = createStackNavigator({
   Customer: {
     screen: Customer,
     navigationOptions: ({navigation}) => ({
-      title: 'Question Page',
+      title: 'Customer Page',
+      header: null,
+    }),
+  },
+  Surveys: {
+    screen: Surveys,
+    navigationOptions: ({navigation}) => ({
+      title: 'Survey Page',
       header: null,
     }),
   },

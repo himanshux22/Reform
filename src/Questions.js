@@ -31,6 +31,10 @@ export default class Questions extends React.Component {
     LangQuestion = this.props.navigation.getParam('Allquestion', null);
   }
 
+  componentWillMount() {
+    LangQuestion = this.props.navigation.getParam('Allquestion', null);
+  }
+
   componentDidMount() {
     if (LangQuestion != null) {
       LangQuestion.forEach((item, index) => {

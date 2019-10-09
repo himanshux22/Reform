@@ -18,12 +18,13 @@ import {
 const DEVICE_WIDTH = Dimensions.get('window').width;
 
 export default class LoginScreen extends Component {
+  SetCred(username, pass) {}
   render() {
     return (
       <Wallpaper>
         <Logo />
         <View style={{height: DEVICE_WIDTH / 1.5}}>
-          <Form />
+          <Form SetCred={this.SetCred} />
           <ButtonSubmit navigation={this.props.navigation} />
         </View>
       </Wallpaper>
