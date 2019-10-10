@@ -40,8 +40,8 @@ export default class ButtonSubmit extends Component {
     }
 
     await callService(
-      //{accid: '9998887777', accpwd: 'pass'},
-      {accid: this.props.username, accpwd: this.props.password},
+      {accid: '9998887777', accpwd: 'pass'},
+      // {accid: this.props.username, accpwd: this.props.password},
 
       'apis/index.php/custlogin',
       false,
@@ -61,6 +61,7 @@ export default class ButtonSubmit extends Component {
     var tt = await this.LoginAPI();
 
     if (logindata == null || logindata.code == '9992') {
+      alert('Invalid Login');
       return;
     }
     this.setState({isLoading: true});
