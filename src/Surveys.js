@@ -11,7 +11,6 @@ import {
   View,
   StyleSheet,
 } from 'react-native';
-import UserInput from './components/UserInput';
 import {FlatGrid} from 'react-native-super-grid';
 
 import Wallpaper from './components/Wallpaper';

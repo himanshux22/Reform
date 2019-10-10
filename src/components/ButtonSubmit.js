@@ -40,8 +40,8 @@ export default class ButtonSubmit extends Component {
     }
 
     await callService(
-      {accid: '9998887777', accpwd: 'pass'},
-      // {accid: this.props.username, accpwd: this.props.password},
+      //{accid: '9998887777', accpwd: 'pass'},
+      {accid: this.props.username, accpwd: this.props.password},
 
       'apis/index.php/custlogin',
       false,
